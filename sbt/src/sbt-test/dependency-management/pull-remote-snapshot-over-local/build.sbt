@@ -1,5 +1,5 @@
 lazy val sharedResolver =
-  Resolver.defaultShared
+  Resolver.defaultShared.nonlocal()
   //MavenRepository("example-shared-repo", "file:///tmp/shared-maven-repo-bad-example")
   //Resolver.file("example-shared-repo", repoDir)(Resolver.defaultPatterns)
 

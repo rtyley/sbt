@@ -28,5 +28,4 @@ $ copy-file changes/GoodCommon.scala common/src/main/scala/Common.scala
 
 
 # This should compile now, because Ivy should look at each repository for the most up-to-date file.
-> dumpResolvers
 > dependent/compile
