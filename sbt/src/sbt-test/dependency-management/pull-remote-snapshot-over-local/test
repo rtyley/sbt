@@ -1,0 +1,11 @@
+# Validate that a bad dependency fails the compile
+$ copy-file changes/BadCommon.scala common/src/main/scala/Common.scala
+> common/publish
+-> dependent/compile
+
+# Push new good change to a DIFFERENT repository.
+$ copy-file changes/GoodCommon.scala common/src/main/scala/Common.scala
+> common/publishLocal
+
+# This should compile now, because Ivy should look at each repository for the most up-to-date file.
+> dependent/compile
