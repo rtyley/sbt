@@ -1,5 +1,3 @@
-lazy val repoDir = file("shared-repo")
-
 lazy val sharedResolver =
   Resolver.defaultShared
   //MavenRepository("example-shared-repo", "file:///tmp/shared-maven-repo-bad-example")
@@ -31,15 +29,27 @@ lazy val dependent = (
   .settings(
     // Ignore the inter-project resolver, so we force to look remotely.
     resolvers += sharedResolver,
-    fullResolvers := Seq(sharedResolver),
+    fullResolvers := fullResolvers.value.filterNot(_==projectResolver.value),
     libraryDependencies += "com.badexample" % "badexample" % "1.0-SNAPSHOT"
   )
 )
 
-lazy val dumpContents = taskKey[Unit]("dump contents of shared repo directory")
+TaskKey[Unit]("cleanLocalCache") := {
+ val ivyHome = file("${ivy.home}")
+ val ivyCache = ivyHome / "cache"
+ val ivyShared = ivyHome / "shared"
+ val ivyLocal = ivyHome / "local"
+ def deleteDirContents(dir: String)(base: File): Unit = {
+   val toDelete = base / dir
+   streams.value.log.info(s"Deleting: ${toDelete.getAbsolutePath}")
+   IO.delete(toDelete)
+ }
+ Seq(ivyCache, ivyShared, ivyLocal).map(deleteDirContents("com.badexample"))
+}
 
-dumpContents := {
-  repoDir.***.get.map(_.getAbsolutePath).sorted foreach { fname =>
-     streams.value.log.info(fname)
+TaskKey[Unit]("dumpResolvers") := {
+  streams.value.log.info(s" -- dependent/fullResolvers -- ")
+  (fullResolvers in dependent).value foreach { r =>
+    streams.value.log.info(s" * ${r}")
   }
 }
