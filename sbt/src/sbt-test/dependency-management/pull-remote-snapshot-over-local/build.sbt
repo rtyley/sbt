@@ -35,7 +35,10 @@ lazy val dependent = (
 )
 
 TaskKey[Unit]("cleanLocalCache") := {
- val ivyHome = file("${ivy.home}")
+ val ivyHome = file(sys.props.get("ivy.home")  orElse sys.props.get("sbt.ivy.home") match {
+   case Some(home) => home
+   case None => s"${sys.props("user.home")}/.ivy2"
+ })
  val ivyCache = ivyHome / "cache"
  val ivyShared = ivyHome / "shared"
  val ivyLocal = ivyHome / "local"
